@@ -1,0 +1,33 @@
+name: Artifacto
+
+on:
+    workflow_call:
+        inputs:
+            branch:
+                description: Branch to upload artifact from
+                required: true
+                type: string
+        outputs:
+            id:
+                description: The artifact ID
+                value: ${{jobs.upload-artifact.outputs.artifact-id}}
+            url:
+                description: The artifact URL
+                value: ${{jobs.upload-artifact.outputs.artifact-url}}
+
+jobs:
+    upload-artifact:
+        name: Upload artifact
+        runs-on: ubuntu-slim
+        outputs:
+            artifact-id: ${{steps.step1.outputs.artifact-id}}
+            artifact-url: ${{steps.step1.outputs.artifact-url}}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{inputs.branch}}
+            - id: step1
+              uses: actions/upload-artifact@v4
+              with:
+                  path: ./artifact.txt

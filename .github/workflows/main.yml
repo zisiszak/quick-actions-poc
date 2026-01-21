@@ -1,0 +1,27 @@
+name: Main
+
+on:
+    workflow_dispatch:
+        inputs:
+            branch:
+                description: "Branch to deploy from"
+                required: true
+                type: choice
+                options:
+                    - artifacto
+
+jobs:
+    make-artifact:
+        uses: ./.github/workflows/artifacto.yml
+        with:
+            branch: ${{inputs.branch}}
+    echo-details-from-main:
+        name: Echo details from main
+        needs: make-artifact
+        runs-on: ubuntu-slim
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Echo artifact details
+              run: echo ID:${{needs.make-artifact.outputs.id}} URL:${{needs.make-artifact.outputs.url}}
